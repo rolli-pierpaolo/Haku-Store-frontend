@@ -1,0 +1,78 @@
+<!-- ============================================================================ -->
+<!-- PROPRIETARIO: Infrastruttura condivisa (non appartiene a una sola persona) -->
+<!-- ============================================================================ -->
+<div class="topbar">
+  Il tuo primo acquisto? Usa il codice GERARD10 e ottieni subito il 10% di sconto
+</div>
+
+<nav class="navbar">
+  <div class="container navbar-inner">
+    <a routerLink="/catalogo" class="logo">
+      <img src="hakustore-logo.png" alt="Hakustore" />
+    </a>
+
+    <ul class="nav-links">
+      <!-- routerLinkActive (teoria cap. 21): aggiunge la classe "active" al link
+           corrispondente alla rotta corrente, senza logica manuale nel componente -->
+      <li><a routerLink="/catalogo" routerLinkActive="active">Catalogo</a></li>
+      <li><a routerLink="/about" routerLinkActive="active">About</a></li>
+      @if (auth.isAdmin()) {
+        <li><a routerLink="/admin" routerLinkActive="active" style="color: var(--lime);">Gestione</a></li>
+      }
+    </ul>
+
+    <div class="nav-actions">
+      @if (auth.isLogged()) {
+        <a routerLink="/carrello" class="cart-icon" title="Carrello">
+          🛒
+          @if (carrelloS.numeroArticoli() > 0) {
+            <span class="cart-badge">{{ carrelloS.numeroArticoli() }}</span>
+          }
+        </a>
+        <a routerLink="/ordini">I miei ordini</a>
+        <a routerLink="/profilo">{{ auth.currentUser()?.nome }}</a>
+        <button class="btn-text" (click)="logout()">Esci</button>
+      } @else {
+        <a routerLink="/login">Accedi</a>
+        <a routerLink="/registrati" class="btn btn-primary btn-sm">Registrati</a>
+      }
+    </div>
+  </div>
+</nav>
+
+<!-- <router-outlet> (teoria cap. 21): il "buco" nel layout dove Angular inserisce
+     il componente della rotta attiva — home, prodotto-dettaglio, carrello, ecc. -->
+<main class="container page">
+  <router-outlet></router-outlet>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="logo"><img src="hakustore-logo.png" alt="Hakustore" /></span>
+        <p class="footer-desc">Integratori e accessori per chi vuole di più. Qualita' premium, prezzi onesti, risultati reali.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Il mio account</h4>
+        <ul class="footer-links">
+          <li><a routerLink="/profilo">Profilo</a></li>
+          <li><a routerLink="/ordini">I miei ordini</a></li>
+          <li><a routerLink="/carrello">Carrello</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Assistenza</h4>
+        <ul class="footer-links">
+          <li><a routerLink="/about">Chi siamo</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span class="footer-copy">© {{ annoCorrente }} Hakustore. Progetto didattico.</span>
+    </div>
+  </div>
+</footer>

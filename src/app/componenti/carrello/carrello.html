@@ -1,0 +1,79 @@
+<!-- ============================================================================ -->
+<!-- PROPRIETARIO: Pier — Carrello (Carrello / DettaglioCarrello / Coupon) -->
+<!-- ============================================================================ -->
+<h2 class="section-title">Il tuo carrello</h2>
+
+<!-- @if (carrelloS.carrello(); as c) (teoria cap. 16): finche' il carrello non e' ancora
+     arrivato dal backend (null), mostra "Caricamento..."; appena arriva, "c" e' il valore vero -->
+@if (carrelloS.carrello(); as c) {
+  @if (c.righe.length === 0) {
+    <p class="muted">Il carrello è vuoto. <a class="lime" routerLink="/catalogo">Vai al catalogo</a></p>
+  } @else {
+    <table class="tabella">
+      <thead>
+        <tr>
+          <th>Prodotto</th>
+          <th>Prezzo</th>
+          <th>Quantità</th>
+          <th>Subtotale</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (riga of c.righe; track riga.id) {
+          <tr>
+            <td>
+              <strong>{{ riga.variante.nomeProdotto }}</strong>
+              <span class="muted"> — {{ riga.variante.gusto }} {{ riga.variante.formato }} {{ riga.variante.colore }}</span>
+            </td>
+            <!-- prezzo CORRENTE della variante (non congelato): coerente col fatto che
+                 nel backend DettaglioCarrelloMap calcola il subtotale sul prezzo live, non su
+                 uno storicizzato — a differenza di un ordine gia' concluso -->
+            <td>{{ riga.variante.prezzo | currency: 'EUR' }}</td>
+            <td>
+              <input
+                type="number"
+                min="1"
+                [value]="riga.quantita"
+                (change)="aggiornaQuantita(riga, +$any($event.target).value)"
+                class="input-quantita" />
+            </td>
+            <td>{{ riga.subtotale | currency: 'EUR' }}</td>
+            <td><button class="btn-text btn-danger" (click)="rimuovi(riga)">Rimuovi</button></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="riepilogo card">
+      <div class="flex-between"><span class="light">Totale prodotti</span><span>{{ c.totaleProdotti | currency: 'EUR' }}</span></div>
+
+      @if (c.coupon) {
+        <div class="flex-between mt-8">
+          <span class="light">Coupon <strong class="lime">{{ c.coupon.codice }}</strong></span>
+          <span>-{{ c.valoreSconto | currency: 'EUR' }}</span>
+        </div>
+        <button class="btn-text mt-8" (click)="rimuoviCoupon()">Rimuovi coupon</button>
+      } @else {
+        <form class="form-riga mt-16" [formGroup]="couponForm" (ngSubmit)="applicaCoupon()">
+          <div class="campo" style="margin-bottom:0">
+            <label>Codice coupon</label>
+            <input formControlName="codice" />
+          </div>
+          <button class="btn btn-outline" type="submit">Applica</button>
+        </form>
+        @if (erroreCoupon()) {
+          <p class="errore mt-8">{{ erroreCoupon() }}</p>
+        }
+      }
+
+      <div class="flex-between mt-16 totale-finale">
+        <span>Totale da pagare</span><span>{{ c.totalePagato | currency: 'EUR' }}</span>
+      </div>
+
+      <button class="btn btn-primary btn-block mt-16" routerLink="/checkout">Procedi al checkout</button>
+    </div>
+  }
+} @else {
+  <p class="muted">Caricamento...</p>
+}

@@ -1,0 +1,67 @@
+/* stili condivisi in styles.css (.hero-mini, .product-card, .form-riga) */
+
+/* solo l'hero della home: testo centrato e molto piu' grande, per fare da vera apertura */
+.hero-home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  /* annulla lo spazio tra la navbar e l'hero (padding di .page + altri margini):
+     cosi' l'hero (e i raggi dietro al titolo) tocca davvero il bordo della navbar */
+  margin-top: -66px;
+  /* "full bleed": l'hero esce dal contenitore centrato (.container, max 1600px) e
+     arriva ai bordi veri dello schermo, cosi' anche i raggi dietro al titolo finiscono
+     a fine schermo invece di fermarsi al bordo del container. Il contenuto (tag/titolo/
+     sottotitolo) resta comunque centrato perche' e' un flex container con align-items:center */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+/* raggi di sole dietro al titolo: linee che si alternano a raggiera dal centro,
+   sfumate ai bordi con una maschera radiale cosi' non creano un rettangolo netto.
+   z-index:0 (mentre il testo reale ha z-index:1, vedi .hero-mini > *) garantisce
+   che i raggi restino sempre dietro, qualunque sia l'ordine nel DOM */
+.hero-home::after {
+  content: '';
+  position: absolute;
+  /* top:0 e non un inset negativo: cosi' il pattern parte esattamente dal bordo
+     superiore della sezione, che e' anche il limite della navbar sopra */
+  top: 0;
+  left: -10%;
+  right: -10%;
+  bottom: 0;
+  z-index: 0;
+  /* origine al centro (non in alto): i raggi partono stretti dal centro della scena
+     e si allargano a raggiera in tutte le direzioni, come i raggi disegnati dietro
+     un personaggio nei fumetti. Il raggio della maschera arriva fino all'angolo piu'
+     lontano (default "farthest-corner"), cosi' i raggi restano visibili fino ai bordi
+     invece di sfumare prima di raggiungerli */
+  background-image: repeating-conic-gradient(
+    from 0deg at 50% 45%,
+    rgba(46, 196, 214, 0.38) 0deg 2deg,
+    transparent 2deg 11deg
+  );
+  -webkit-mask-image: radial-gradient(circle at 50% 45%, black 75%, transparent 100%);
+  mask-image: radial-gradient(circle at 50% 45%, black 75%, transparent 100%);
+  pointer-events: none;
+}
+.hero-home .hero-title {
+  font-size: clamp(48px, 8vw, 88px);
+}
+.hero-home .hero-sub {
+  max-width: 560px;
+}
+/* logo grande in apertura: rotondo (nasconde lo sfondo quadrato del png) e con
+   il trattamento "adesivo da fumetto" (bordo spesso + ombra netta offset) coerente
+   con .hero-tag */
+.hero-logo-big {
+  width: clamp(140px, 20vw, 220px);
+  height: clamp(140px, 20vw, 220px);
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+  margin-bottom: 24px;
+  transform: rotate(-2deg);
+}

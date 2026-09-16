@@ -1,0 +1,122 @@
+<!-- ============================================================================ -->
+<!-- PROPRIETARIO: Mattia — Catalogo (Categoria / Prodotto / VarianteProdotto) -->
+<!-- ============================================================================ -->
+<h3 class="mb-16">Prodotti</h3>
+
+@if (erroreMsg()) {
+  <p class="errore">{{ erroreMsg() }}</p>
+}
+
+@for (p of prodotti(); track p.id) {
+  <div class="riga-prodotto">
+    <div class="flex-between">
+      <span (click)="espandi(p.id)" style="cursor:pointer;">
+        <strong>{{ p.nome }}</strong> <span class="muted">— {{ p.marca }} ({{ p.categoria?.nome }}) — {{ p.varianti.length }} varianti</span>
+      </span>
+      <button class="btn-text btn-danger" (click)="eliminaProdotto(p.id)">Elimina prodotto</button>
+    </div>
+
+    @if (prodottoEspanso() === p.id) {
+      <div class="dettaglio-varianti">
+        <table class="tabella">
+          <tbody>
+            @let attributiRiga = attributiCategoria(p.categoria?.nome);
+            @for (v of p.varianti; track v.id) {
+              @if (varianteInModifica() === v.id) {
+                <tr>
+                  <td colspan="4">
+                    <form class="form-riga" style="margin-top:0" [formGroup]="modificaVarianteForm" (ngSubmit)="salvaModificaVariante(v.id)">
+                      @if (attributiRiga.gusto) {
+                        <div class="campo" style="margin-bottom:0"><label>Gusto</label><input formControlName="gusto" /></div>
+                      }
+                      @if (attributiRiga.formato) {
+                        <div class="campo" style="margin-bottom:0"><label>{{ attributiRiga.labelFormato }}</label><input formControlName="formato" /></div>
+                      }
+                      @if (attributiRiga.colore) {
+                        <div class="campo" style="margin-bottom:0"><label>{{ attributiRiga.labelColore }}</label><input formControlName="colore" /></div>
+                      }
+                      <div class="campo" style="margin-bottom:0"><label>Prezzo</label><input type="number" formControlName="prezzo" /></div>
+                      <div class="campo" style="margin-bottom:0"><label>Quantità</label><input type="number" formControlName="quantitaDisponibile" /></div>
+                      <button class="btn-text lime" type="submit" [disabled]="modificaVarianteForm.invalid">Salva</button>
+                      <button class="btn-text" type="button" (click)="varianteInModifica.set(null)">Annulla</button>
+                    </form>
+                  </td>
+                </tr>
+              } @else {
+                <tr>
+                  <td>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      @if (v.immagine) {
+                        <img [src]="apiOrigin + v.immagine" alt="" style="width:32px;height:32px;object-fit:cover;border-radius:4px;flex-shrink:0;">
+                      }
+                      <span>{{ v.gusto }} {{ v.formato }} {{ v.colore }}</span>
+                    </div>
+                  </td>
+                  <td>{{ v.prezzo | currency: 'EUR' }}</td>
+                  <td>
+                    <!-- (change) invece di (input): scatta solo quando l'utente conferma il valore
+                         (esce dal campo o preme invio), non ad ogni singola cifra digitata.
+                         $any($event.target).value e' necessario perche' TypeScript non conosce
+                         il tipo esatto dell'elemento DOM che ha generato l'evento -->
+                    <input
+                      type="number"
+                      min="0"
+                      [value]="v.quantitaDisponibile"
+                      (change)="aggiornaQuantita(v, +$any($event.target).value)"
+                      class="input-quantita" /> pz
+                  </td>
+                  <td>
+                    <button class="btn-text" type="button" [disabled]="caricamentoImmagineVariante() === v.id" (click)="fileInputVariante.click()">
+                      {{ caricamentoImmagineVariante() === v.id ? '...' : 'Immagine' }}
+                    </button>
+                    <input #fileInputVariante type="file" accept="image/*" style="display:none" (change)="onFileSelectedVariante($event, v)">
+                    <button class="btn-text" (click)="iniziaModificaVariante(v)">Modifica</button>
+                    <button class="btn-text btn-danger" (click)="eliminaVariante(v.id)">Elimina</button>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+
+        <!-- @let (Angular 18+, evoluzione del Control Flow visto in teoria cap. 16): definisce
+             una variabile locale nel template, calcolata una volta sola e riusata piu' volte sotto,
+             evitando di richiamare attributiCategoria(...) ripetutamente per ogni @if -->
+        @let attributi = attributiCategoria(p.categoria?.nome);
+        <form class="form-riga" [formGroup]="nuovaVarianteForm" (ngSubmit)="creaVariante(p.id)">
+          @if (attributi.gusto) {
+            <div class="campo" style="margin-bottom:0"><label>Gusto</label><input formControlName="gusto" /></div>
+          }
+          @if (attributi.formato) {
+            <div class="campo" style="margin-bottom:0"><label>{{ attributi.labelFormato }}</label><input formControlName="formato" /></div>
+          }
+          @if (attributi.colore) {
+            <div class="campo" style="margin-bottom:0"><label>{{ attributi.labelColore }}</label><input formControlName="colore" /></div>
+          }
+          <div class="campo" style="margin-bottom:0"><label>Prezzo</label><input type="number" formControlName="prezzo" /></div>
+          <div class="campo" style="margin-bottom:0"><label>Quantità</label><input type="number" formControlName="quantitaDisponibile" /></div>
+          <button class="btn btn-primary" type="submit" [disabled]="nuovaVarianteForm.invalid">
+            Aggiungi variante
+          </button>
+        </form>
+      </div>
+    }
+  </div>
+}
+
+<h4 class="mt-24 mb-16">Nuovo prodotto</h4>
+<form class="form-riga" [formGroup]="nuovoProdottoForm" (ngSubmit)="creaProdotto()">
+  <div class="campo" style="margin-bottom:0">
+    <label>Categoria</label>
+    <select formControlName="idCategoria">
+      <option [value]="null" disabled>Seleziona...</option>
+      @for (c of categorie(); track c.id) {
+        <option [value]="c.id">{{ c.nome }}</option>
+      }
+    </select>
+  </div>
+  <div class="campo" style="margin-bottom:0"><label>Nome</label><input formControlName="nome" /></div>
+  <div class="campo" style="margin-bottom:0"><label>Marca</label><input formControlName="marca" /></div>
+  <div class="campo" style="margin-bottom:0"><label>Descrizione</label><input formControlName="descrizione" /></div>
+  <button class="btn btn-primary" type="submit" [disabled]="nuovoProdottoForm.invalid">Crea</button>
+</form>

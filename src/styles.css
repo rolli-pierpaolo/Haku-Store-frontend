@@ -1,0 +1,396 @@
+/* ─── DESIGN SYSTEM (ispirato al template FuelUp) ─── */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* palette allineata al vero logo (gattino palestrato): papillon/scritta ciano, contorni
+     navy, sfondo crema — prima qui c'era un oro che nel logo non esiste proprio */
+  --lime:         #2EC4D6;  /* ciano del papillon/scritta: sfondi bottoni/badge/topbar */
+  --celeste-deep: #12707D;  /* ciano scuro: testo/accenti leggibili su sfondo chiaro */
+  --bg:      #FAF3E4;       /* crema del logo */
+  --card:    #FFFFFF;
+  --border:  #E6DEC8;
+  --muted:   #9C9483;
+  --light:   #55606E;
+  --ink:     #1B3350;       /* navy del logo */
+  --white:   #FFFFFF;
+  --danger:  #C0392B;
+  --font-display: 'Barlow Condensed', sans-serif;
+  --font-body:    'Inter', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+/* ─── ANIMAZIONI ─── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero-mini { animation: fadeInUp 0.6s ease both; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  /* l'hero "full bleed" (100vw, vedi .hero-home) e' leggermente piu' largo del viewport
+     visibile sui browser dove 100vw include la scrollbar: senza questo la pagina
+     guadagnerebbe qualche pixel di scroll orizzontale indesiderato */
+  overflow-x: hidden;
+}
+
+a { text-decoration: none; color: inherit; }
+img { display: block; max-width: 100%; }
+h1, h2, h3, h4 { font-family: var(--font-display); text-transform: uppercase; }
+
+/* ─── LAYOUT ─── */
+/* padding laterale che cresce con lo schermo (clamp: min 24px, max 96px), cosi' il
+   contenuto ha sempre una distanza visibile dai bordi, non solo sugli schermi larghi
+   dove entra in gioco il max-width, ma anche su quelli medi dove il container
+   coincide quasi con la larghezza della finestra */
+.container { max-width: 1600px; margin: 0 auto; padding: 0 clamp(24px, 6vw, 96px); }
+/* solo top/bottom (non lo shorthand a 3 valori): "padding: 48px 0 80px" azzererebbe anche
+   il padding laterale di .container sull'elemento <main class="container page">, che ha
+   la stessa specificita' e viene dopo nel foglio di stile — annullando il margine dai bordi */
+.page { padding-top: 48px; padding-bottom: 80px; }
+
+.section-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--celeste-deep);
+  margin-bottom: 12px;
+}
+.section-title,
+.pagina-titolo {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin-bottom: 32px;
+}
+
+/* ─── BOTTONI ─── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 28px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+/* stile fumetto: bordo spesso + ombra "offset" netta invece di un blur morbido,
+   con l'effetto pressione al click (l'ombra si accorcia mentre il bottone si avvicina) */
+.btn-primary {
+  background: var(--lime);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.btn-primary:hover:not(:disabled) { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); }
+.btn-primary:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+.btn-outline { background: var(--card); color: var(--ink); border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+.btn-outline:hover:not(:disabled) { border-color: var(--celeste-deep); color: var(--celeste-deep); transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); }
+.btn-outline:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+.btn-text {
+  background: none;
+  border: none;
+  color: var(--light);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 6px 10px;
+}
+.btn-text:hover { color: var(--ink); }
+.btn-danger { color: var(--danger); }
+.btn-danger:hover { color: #ff8080; }
+/* variante piena (non solo testo), per azioni distruttive importanti come l'eliminazione account */
+.btn.btn-danger { background: var(--danger); color: var(--white); border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+.btn.btn-danger:hover:not(:disabled) { filter: brightness(0.9); transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); }
+.btn.btn-danger:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+.btn-sm { padding: 8px 16px; font-size: 11px; }
+.btn-block { width: 100%; }
+
+/* ─── FORM ─── */
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.campo label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--light);
+}
+.campo input,
+.campo select,
+.campo textarea {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 14px;
+  padding: 12px 14px;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+}
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus { border-color: var(--lime); }
+.campo input::placeholder,
+.campo textarea::placeholder { color: var(--muted); }
+.campo-help { font-size: 11px; color: var(--muted); }
+
+.form,
+.form-verticale {
+  display: flex;
+  flex-direction: column;
+  max-width: 420px;
+}
+.form-wide { max-width: 100%; }
+.form-riga,
+.riga-azioni {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-top: 12px;
+}
+.form-riga .campo { flex: 1; min-width: 160px; }
+
+.errore {
+  color: var(--danger);
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+.messaggio-ok {
+  color: var(--celeste-deep);
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+/* ─── CARD ─── */
+/* stile pannello a fumetti: bordo spesso + ombra "offset" netta invece di un blur morbido,
+   come i riquadri di una pagina manga */
+.card {
+  background: var(--card);
+  border: 3px solid var(--ink);
+  padding: 24px;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+/* ─── TABELLA ─── */
+.tabella,
+.tabella-full {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+}
+.tabella th,
+.tabella-full th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.tabella td,
+.tabella-full td {
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.tabella tr:last-child td,
+.tabella-full tr:last-child td { border-bottom: none; }
+
+/* ─── GRIGLIE ─── */
+.griglia-prodotti,
+.griglia-card {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 16px;
+}
+
+/* ─── HERO (mini, per pagine interne) ─── */
+/* retino a puntini (screentone da fumetto), applicato come sfondo dietro il contenuto
+   dell'hero senza dover toccare l'HTML di ogni pagina che usa .hero-mini */
+.hero-mini {
+  padding: 32px 0 48px;
+  border-bottom: 3px solid var(--ink);
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-mini::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, var(--ink) 1px, transparent 1px);
+  background-size: 9px 9px;
+  opacity: 0.06;
+  pointer-events: none;
+}
+.hero-mini > * { position: relative; z-index: 1; }
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--lime);
+  border: 2px solid var(--ink);
+  padding: 5px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 20px;
+  transform: rotate(-3deg);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.hero-tag-dot {
+  width: 6px; height: 6px;
+  background: var(--ink);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 900;
+  line-height: 0.95;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+/* la parola in risalto prende il trattamento "impact lettering" da fumetto:
+   riempimento ciano + contorno netto, paint-order evita che il contorno copra il riempimento */
+.hero-title em {
+  font-style: italic;
+  color: var(--lime);
+  -webkit-text-stroke: 1.5px var(--ink);
+  paint-order: stroke fill;
+}
+.hero-sub { font-size: 15px; color: var(--light); max-width: 480px; }
+
+/* ─── PRODUCT CARD ─── */
+.product-card {
+  background: var(--card);
+  border: 3px solid var(--ink);
+  display: block;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.product-card:hover {
+  border-color: var(--lime);
+  transform: translate(-2px, -2px);
+  box-shadow: 8px 8px 0 var(--ink);
+}
+.product-img {
+  position: relative;
+  background-color: #F3E9D3;
+  overflow: hidden;
+}
+.product-img img {
+  /* niente altezza fissa e niente object-fit: il riquadro si adatta esattamente
+     alle proporzioni vere dell'immagine (larghezza piena, altezza proporzionale),
+     cosi' non c'e' ne' ritaglio ne' bordo vuoto ai lati */
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.product-card:hover .product-img img { transform: scale(1.06); }
+/* Foto della categoria, sovrapposta come bollino sopra l'immagine generata del prodotto
+   (vedi immagine-prodotto.ts: un SVG mostrato via <img> non puo' caricare immagini esterne
+   al suo interno, quindi questa e' una <img> HTML separata, posizionata sopra).
+   Selettore ".product-img .badge-categoria" (2 classi) invece di ".badge-categoria" da solo:
+   serve piu' specificita' di ".product-img img" qui sopra (1 classe + 1 elemento), altrimenti
+   quella regola vince e il bollino si allarga al 100% coprendo tutta la card. */
+.product-img .badge-categoria {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--lime);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+.product-info { padding: 16px; }
+.product-brand {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 5px;
+}
+.product-name {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 1.1;
+  margin-bottom: 6px;
+  color: var(--ink);
+}
+.product-flavor { font-size: 12px; color: var(--light); margin-bottom: 10px; }
+.product-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+.product-price { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--ink); }
+
+/* ─── BADGE STATO ─── */
+.badge-stato {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border: 2px solid var(--ink);
+  color: var(--ink);
+  background: var(--card);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+/* ─── UTILITY ─── */
+.muted { color: var(--muted); }
+.light { color: var(--light); }
+.lime { color: var(--celeste-deep); }
+.mt-8 { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+.mb-16 { margin-bottom: 16px; }
+.flex { display: flex; align-items: center; gap: 12px; }
+.flex-col { display: flex; flex-direction: column; gap: 8px; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.text-right { text-align: right; }

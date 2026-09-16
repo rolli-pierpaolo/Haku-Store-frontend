@@ -1,0 +1,43 @@
+<!-- ============================================================================ -->
+<!-- PROPRIETARIO: Valerio — Ordini (Ordine / DettaglioOrdine / checkout) -->
+<!-- ============================================================================ -->
+<h3 class="mb-16">Tutti gli ordini</h3>
+
+<table class="tabella">
+  <thead>
+    <tr>
+      <th>Numero</th>
+      <th>Utente</th>
+      <th>Data</th>
+      <th>Totale</th>
+      <th>Stato</th>
+      <th>Pagamento</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (o of ordini(); track o.id) {
+      <tr>
+        <td>#{{ o.id }}</td>
+        <td>{{ o.idUtente }}</td>
+        <td>{{ o.dataOrdine | date: 'dd/MM/yyyy HH:mm' }}</td>
+        <td>{{ o.totalePagato | currency: 'EUR' }}</td>
+        <td>
+          <!-- (change) chiama subito il backend appena l'admin sceglie un nuovo stato,
+               senza bisogno di un bottone "Salva" separato -->
+          <select class="select-stato" [value]="o.stato" (change)="cambiaStato(o.id, $any($event.target).value)">
+            @for (s of statiOrdine; track s) {
+              <option [value]="s">{{ s }}</option>
+            }
+          </select>
+        </td>
+        <td>
+          <select class="select-stato" [value]="o.statoPagamento" (change)="cambiaStatoPagamento(o.id, $any($event.target).value)">
+            @for (s of statiPagamento; track s) {
+              <option [value]="s">{{ s }}</option>
+            }
+          </select>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>

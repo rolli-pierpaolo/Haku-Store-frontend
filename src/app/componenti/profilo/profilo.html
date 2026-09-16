@@ -1,0 +1,63 @@
+<!-- ============================================================================ -->
+<!-- PROPRIETARIO: Sarah — Utente, Recensioni & Sicurezza -->
+<!-- ============================================================================ -->
+<h2 class="section-title">Il mio profilo</h2>
+
+<div class="scheda-dati card">
+  <h3 class="mb-16">I miei dati</h3>
+  <!-- Interpolazione {{ }} (teoria cap. 15) con optional chaining: auth.currentUser()?.email
+       legge il signal e, se non e' null, il campo email -->
+  <p class="muted mb-16">Email: {{ auth.currentUser()?.email }} (non modificabile qui)</p>
+  <form class="form form-wide" [formGroup]="datiForm" (ngSubmit)="salvaDati()">
+    <div class="campo"><label>Nome</label><input formControlName="nome" /></div>
+    <div class="campo"><label>Cognome</label><input formControlName="cognome" /></div>
+    <div class="campo"><label>Telefono</label><input formControlName="telefono" /></div>
+    @if (messaggioDati()) {
+      <p class="messaggio-ok">{{ messaggioDati() }}</p>
+    }
+    <button class="btn btn-primary" type="submit">Salva</button>
+  </form>
+</div>
+
+<h3 class="mt-24 mb-16">I miei indirizzi</h3>
+<!-- @for (teoria cap. 16, Control Flow Angular 17+) sostituisce *ngFor: "track ind.id" dice
+     ad Angular come riconoscere ogni elemento tra un aggiornamento e l'altro (per performance).
+     @empty mostra un blocco alternativo se l'array e' vuoto -->
+@for (ind of indirizzi(); track ind.id) {
+  <div class="scheda-indirizzo card">
+    <p>{{ ind.via }}, {{ ind.citta }} ({{ ind.cap }}) {{ ind.provincia }} - {{ ind.nazione }}</p>
+    <!-- (click) e' event binding (teoria cap. 15): passa l'id dell'indirizzo al metodo del componente -->
+    <button class="btn-text btn-danger mt-8" (click)="eliminaIndirizzo(ind.id)">Elimina</button>
+  </div>
+} @empty {
+  <p class="muted">Nessun indirizzo salvato.</p>
+}
+
+<h4 class="mt-24 mb-16">Aggiungi indirizzo</h4>
+<form class="form form-wide" [formGroup]="nuovoIndirizzoForm" (ngSubmit)="aggiungiIndirizzo()">
+  <div class="campo"><label>Via</label><input formControlName="via" /></div>
+  <div class="campo"><label>Città</label><input formControlName="citta" /></div>
+  <div class="campo"><label>CAP</label><input formControlName="cap" /></div>
+  <div class="campo"><label>Provincia</label><input formControlName="provincia" /></div>
+  <button class="btn btn-outline" type="submit" [disabled]="nuovoIndirizzoForm.invalid">Aggiungi</button>
+</form>
+
+<div class="scheda-elimina-account card mt-24">
+  <h3 class="mb-16">Elimina account</h3>
+  @if (!confermaEliminazioneAccount()) {
+    <p class="light mb-16">
+      Elimina definitivamente il tuo account Hakustore, insieme a indirizzi, carrello, recensioni e storico ordini.
+      L'operazione non si può annullare.
+    </p>
+    <button class="btn-text btn-danger" (click)="confermaEliminazioneAccount.set(true)">Elimina il mio account</button>
+  } @else {
+    <p class="errore mb-16">
+      Sei sicuro? Tutti i tuoi dati verranno cancellati per sempre e non potrai più accedere con questo account.
+    </p>
+    @if (erroreEliminazioneAccount()) {
+      <p class="errore mb-16">{{ erroreEliminazioneAccount() }}</p>
+    }
+    <button class="btn btn-danger" (click)="eliminaAccount()">Sì, elimina definitivamente</button>
+    <button class="btn-text" (click)="confermaEliminazioneAccount.set(false)">Annulla</button>
+  }
+</div>

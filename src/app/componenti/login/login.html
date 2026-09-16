@@ -1,0 +1,36 @@
+<!-- ============================================================================ -->
+<!-- PROPRIETARIO: Sarah — Utente, Recensioni & Sicurezza -->
+<!-- ============================================================================ -->
+<div class="scheda-login card">
+  <div class="section-label">Bentornato</div>
+  <h2 class="section-title">Accedi</h2>
+
+  <!-- [formGroup] collega l'intero form al FormGroup definito in login.ts (Reactive Forms, teoria cap. 22).
+       (ngSubmit) e' event binding (teoria cap. 15): chiama onSubmit() quando il form viene inviato -->
+  <form class="form form-wide" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <div class="campo">
+      <label>Email</label>
+      <!-- formControlName collega questo input al FormControl "email" dentro loginForm -->
+      <input type="email" formControlName="email" placeholder="nome@esempio.it" />
+    </div>
+
+    <div class="campo">
+      <label>Password</label>
+      <input type="password" formControlName="password" placeholder="••••••••" />
+    </div>
+
+    <!-- @if e' la nuova sintassi di Control Flow (teoria cap. 16, Angular 17+), sostituisce *ngIf.
+         erroreMsg() e' un signal: si legge chiamandolo come una funzione anche nel template -->
+    @if (erroreMsg()) {
+      <p class="errore">{{ erroreMsg() }}</p>
+    }
+
+    <!-- [disabled] e' property binding (teoria cap. 15): il bottone si disabilita da solo
+         quando il form non e' valido (email/password mancanti o email malformata) -->
+    <button class="btn btn-primary btn-block" type="submit" [disabled]="loginForm.invalid">
+      Accedi
+    </button>
+    <!-- routerLink (teoria cap. 21) naviga senza ricaricare la pagina, restando una SPA -->
+    <a class="mt-16 light" routerLink="/registrati">Non hai un account? <span class="lime">Registrati</span></a>
+  </form>
+</div>

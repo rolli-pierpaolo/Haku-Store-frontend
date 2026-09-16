@@ -1,0 +1,26 @@
+.sottomenu {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+
+.sottomenu a {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--light);
+  padding: 4px 0;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.sottomenu a:hover { color: var(--ink); }
+
+.sottomenu a.attivo {
+  color: var(--celeste-deep);
+  border-bottom-color: var(--lime);
+}

@@ -1,0 +1,16 @@
+<!-- ============================================================================ -->
+<!-- PROPRIETARIO: Infrastruttura condivisa (non appartiene a una sola persona) -->
+<!-- ============================================================================ -->
+<h2 class="section-title">Area di gestione</h2>
+
+<nav class="sottomenu">
+  <a routerLink="categorie" routerLinkActive="attivo">Categorie</a>
+  <a routerLink="prodotti" routerLinkActive="attivo">Prodotti</a>
+  <a routerLink="coupon" routerLinkActive="attivo">Coupon</a>
+  <a routerLink="ordini" routerLinkActive="attivo">Ordini</a>
+</nav>
+
+<!-- Secondo <router-outlet> ANNIDATO dentro il primo (in app.html): qui Angular
+     renderizza AdminCategorie/AdminProdotti/AdminCoupon/AdminOrdini a seconda
+     della rotta figlia attiva, mentre il sottomenu sopra resta sempre visibile -->
+<router-outlet></router-outlet>

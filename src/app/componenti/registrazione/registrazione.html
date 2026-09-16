@@ -1,0 +1,45 @@
+<!-- ============================================================================ -->
+<!-- PROPRIETARIO: Sarah — Utente, Recensioni & Sicurezza -->
+<!-- ============================================================================ -->
+<div class="scheda-registrazione card">
+  <div class="section-label">Unisciti a noi</div>
+  <h2 class="section-title">Crea un account</h2>
+
+  <form class="form form-wide" [formGroup]="registraForm" (ngSubmit)="onSubmit()">
+    <div class="campo">
+      <label>Nome</label>
+      <input formControlName="nome" />
+    </div>
+
+    <div class="campo">
+      <label>Cognome</label>
+      <input formControlName="cognome" />
+    </div>
+
+    <div class="campo">
+      <label>Email</label>
+      <input type="email" formControlName="email" placeholder="nome@esempio.it" />
+    </div>
+
+    <div class="campo">
+      <label>Password</label>
+      <input type="password" formControlName="password" placeholder="minimo 8 caratteri" />
+    </div>
+
+    <!-- Nessun Validators.required qui: il telefono e' facoltativo, esattamente come
+         nel backend (UtenteReq.telefono non ha nessuna annotazione di validazione) -->
+    <div class="campo">
+      <label>Telefono (opzionale)</label>
+      <input formControlName="telefono" />
+    </div>
+
+    @if (erroreMsg()) {
+      <p class="errore">{{ erroreMsg() }}</p>
+    }
+
+    <button class="btn btn-primary btn-block" type="submit" [disabled]="registraForm.invalid">
+      Registrati
+    </button>
+    <a class="mt-16 light" routerLink="/login">Hai già un account? <span class="lime">Accedi</span></a>
+  </form>
+</div>

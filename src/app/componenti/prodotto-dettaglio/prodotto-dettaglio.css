@@ -1,0 +1,118 @@
+.breadcrumb {
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+.breadcrumb a { color: var(--celeste-deep); }
+.breadcrumb a:hover { text-decoration: underline; }
+
+/* Colonna immagine + colonna info affiancate: sotto i 720px va a piena larghezza
+   una sotto l'altra, per non schiacciare il testo su schermi piccoli */
+.layout-dettaglio {
+  display: grid;
+  grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+  margin-bottom: 40px;
+}
+@media (max-width: 720px) {
+  .layout-dettaglio { grid-template-columns: 1fr; }
+}
+
+.product-img-dettaglio {
+  /* stessa regola di .product-img in styles.css (il contenitore prende esattamente
+     le proporzioni vere dell'immagine, zero bordo vuoto colorato ai lati), ma qui in
+     piu' limitiamo la LARGHEZZA massima: senza, un'immagine quasi quadrata verrebbe
+     allargata a tutta pagina (e quindi altissima) invece di restare a dimensione ragionevole */
+  max-width: 420px;
+  border: 1px solid var(--border);
+  margin-bottom: 0;
+}
+
+.rating-riga { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.stelle { font-size: 15px; color: var(--border); letter-spacing: 1px; }
+.stelle span.piena { color: var(--lime); }
+.rating-testo { font-size: 13px; }
+
+.prezzo-dettaglio {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.disponibilita-dettaglio { font-size: 13px; color: var(--celeste-deep); margin-bottom: 16px; }
+.disponibilita-dettaglio.esaurito { color: var(--danger); }
+
+.tabella-specifiche { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+.tabella-specifiche td { padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.tabella-specifiche tr:last-child td { border-bottom: none; }
+
+.descrizione-dettaglio { max-width: 480px; }
+
+/* immagine piu' grande qui rispetto alla card del catalogo: il bollino della categoria
+   scala di conseguenza (e qui viene ingrandito ancora, per vederla meglio) */
+.product-img-dettaglio .badge-categoria {
+  width: 110px;
+  height: 110px;
+  right: 20px;
+  bottom: 20px;
+  border-width: 3px;
+}
+
+.griglia-varianti {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.scheda-variante {
+  cursor: pointer;
+  background: var(--card);
+  border: 3px solid var(--ink);
+  padding: 16px;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.scheda-variante.selezionata {
+  border-color: var(--lime);
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+
+.scheda-variante.esaurita {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.select-formato {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 8px 10px;
+  margin: 8px 0;
+  outline: none;
+}
+.select-formato:focus { border-color: var(--lime); }
+
+.disponibilita {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.campo-quantita {
+  max-width: 100px;
+}
+
+.scheda-recensione {
+  margin-bottom: 8px;
+}
+
+.data-recensione {
+  font-size: 0.8rem;
+  margin-top: 8px;
+}

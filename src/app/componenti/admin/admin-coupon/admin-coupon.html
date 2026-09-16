@@ -1,0 +1,54 @@
+<!-- ============================================================================ -->
+<!-- PROPRIETARIO: Pier — Carrello (Carrello / DettaglioCarrello / Coupon) -->
+<!-- ============================================================================ -->
+<h3 class="mb-16">Coupon</h3>
+
+@if (erroreMsg()) {
+  <p class="errore">{{ erroreMsg() }}</p>
+}
+
+<table class="tabella">
+  <thead>
+    <tr>
+      <th>Codice</th>
+      <th>Tipo</th>
+      <th>Valore</th>
+      <th>Validità</th>
+      <th>Attivo</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (c of coupon(); track c.id) {
+      <tr>
+        <td>{{ c.codice }}</td>
+        <td>{{ c.tipologia }}</td>
+        <!-- Espressione ternaria dentro l'interpolazione: se PERCENTUALE mostra "10%",
+             altrimenti usa la pipe "currency" per un valore fisso in euro -->
+        <td>{{ c.tipologia === 'PERCENTUALE' ? c.valore + '%' : (c.valore | currency: 'EUR') }}</td>
+        <td>{{ c.dataInizio | date: 'dd/MM/yyyy' }} - {{ c.dataFine | date: 'dd/MM/yyyy' }}</td>
+        <td><span class="badge-stato">{{ c.isAttivo ? 'Sì' : 'No' }}</span></td>
+        <td>
+          <button class="btn-text" (click)="attivaDisattiva(c)">{{ c.isAttivo ? 'Disattiva' : 'Attiva' }}</button>
+          <button class="btn-text btn-danger" (click)="elimina(c.id)">Elimina</button>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
+
+<h4 class="mt-24 mb-16">Nuovo coupon</h4>
+<form class="form-riga" [formGroup]="nuovoForm" (ngSubmit)="crea()">
+  <div class="campo" style="margin-bottom:0"><label>Codice</label><input formControlName="codice" /></div>
+  <div class="campo" style="margin-bottom:0">
+    <label>Tipologia</label>
+    <select formControlName="tipologia">
+      <option value="PERCENTUALE">Percentuale</option>
+      <option value="FISSO">Fisso</option>
+    </select>
+  </div>
+  <div class="campo" style="margin-bottom:0"><label>Valore</label><input type="number" formControlName="valore" /></div>
+  <div class="campo" style="margin-bottom:0"><label>Data inizio</label><input type="date" formControlName="dataInizio" /></div>
+  <div class="campo" style="margin-bottom:0"><label>Data fine</label><input type="date" formControlName="dataFine" /></div>
+  <button class="btn btn-primary" type="submit" [disabled]="nuovoForm.invalid">Crea</button>
+</form>

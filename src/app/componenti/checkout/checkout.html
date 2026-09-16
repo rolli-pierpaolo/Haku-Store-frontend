@@ -1,0 +1,77 @@
+<!-- ============================================================================ -->
+<!-- PROPRIETARIO: Valerio — Ordini (Ordine / DettaglioOrdine / checkout) -->
+<!-- ============================================================================ -->
+<h2 class="section-title">Checkout</h2>
+
+@if (carrelloS.carrello(); as c) {
+  @if (c.righe.length === 0) {
+    <p class="muted">Il carrello è vuoto, non puoi procedere al checkout.</p>
+  } @else {
+    <h3 class="mb-16">Indirizzo di spedizione</h3>
+
+    @if (indirizzi().length > 0 && !mostraNuovoIndirizzo()) {
+      <div class="lista-indirizzi">
+        @for (ind of indirizzi(); track ind.id) {
+          <label class="opzione-radio">
+            <!-- [formControl] collega direttamente il singolo radio al FormControl
+                 "idIndirizzo" (alternativa a formControlName quando non si e' dentro
+                 un formGroupName annidato) -->
+            <input type="radio" name="idIndirizzo" [formControl]="checkoutForm.controls.idIndirizzo" [value]="ind.id" />
+            {{ ind.via }}, {{ ind.citta }} ({{ ind.cap }}) {{ ind.provincia }} - {{ ind.nazione }}
+          </label>
+        }
+      </div>
+      <button class="btn-text" (click)="mostraNuovoIndirizzo.set(true)">+ Nuovo indirizzo</button>
+    } @else {
+      <form class="form form-wide" [formGroup]="nuovoIndirizzoForm" (ngSubmit)="creaIndirizzo()">
+        <div class="form-riga">
+          <div class="campo"><label>Via</label><input formControlName="via" /></div>
+          <div class="campo"><label>Città</label><input formControlName="citta" /></div>
+        </div>
+        <div class="form-riga">
+          <div class="campo"><label>CAP</label><input formControlName="cap" /></div>
+          <div class="campo"><label>Provincia</label><input formControlName="provincia" /></div>
+        </div>
+        <div class="form-riga">
+          <button class="btn btn-outline" type="submit" [disabled]="nuovoIndirizzoForm.invalid">Salva indirizzo</button>
+          @if (indirizzi().length > 0) {
+            <button class="btn-text" type="button" (click)="mostraNuovoIndirizzo.set(false)">Annulla</button>
+          }
+        </div>
+      </form>
+    }
+
+    <h3 class="mt-24 mb-16">Metodo di pagamento</h3>
+    <div class="lista-pagamenti">
+      <label class="opzione-radio">
+        <input type="radio" name="metodoPagamento" [formControl]="checkoutForm.controls.metodoPagamento" value="CARTA" /> Carta di credito
+      </label>
+      <label class="opzione-radio">
+        <input type="radio" name="metodoPagamento" [formControl]="checkoutForm.controls.metodoPagamento" value="PAYPAL" /> PayPal
+      </label>
+      <label class="opzione-radio">
+        <input type="radio" name="metodoPagamento" [formControl]="checkoutForm.controls.metodoPagamento" value="CONTRASSEGNO" /> Contrassegno
+      </label>
+    </div>
+
+    <!-- Riepilogo finale: gli stessi totali gia' visti nel carrello (calcolati dal backend
+         in CarrelloMap), ripetuti qui per conferma prima dell'ordine -->
+    <div class="riepilogo card mt-24">
+      <div class="flex-between"><span class="light">Totale prodotti</span><span>{{ c.totaleProdotti | currency: 'EUR' }}</span></div>
+      @if (c.coupon) {
+        <div class="flex-between mt-8"><span class="light">Sconto ({{ c.coupon.codice }})</span><span>-{{ c.valoreSconto | currency: 'EUR' }}</span></div>
+      }
+      <div class="flex-between mt-16 totale-finale"><span>Totale da pagare</span><span>{{ c.totalePagato | currency: 'EUR' }}</span></div>
+    </div>
+
+    @if (erroreMsg()) {
+      <p class="errore mt-16">{{ erroreMsg() }}</p>
+    }
+
+    <button class="btn btn-primary mt-16" [disabled]="checkoutForm.invalid" (click)="confermaOrdine()">
+      Conferma ordine
+    </button>
+  }
+} @else {
+  <p class="muted">Caricamento...</p>
+}

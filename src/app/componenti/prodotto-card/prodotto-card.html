@@ -1,0 +1,23 @@
+<!-- ============================================================================ -->
+<!-- PROPRIETARIO: Mattia — Catalogo (Categoria / Prodotto / VarianteProdotto) -->
+<!-- ============================================================================ -->
+<a class="product-card" [routerLink]="['/prodotto', p().id]">
+  <div class="product-img">
+    <img [src]="immagineDi(p())" [alt]="p().nome" />
+    @if (immagineCategoriaDi(p()); as urlCategoria) {
+      <img class="badge-categoria" [src]="urlCategoria" [alt]="p().categoria?.nome ?? ''" />
+    }
+  </div>
+  <div class="product-info">
+    <div class="product-brand">{{ p().marca }}</div>
+    <div class="product-name">{{ p().nome }}</div>
+    <div class="product-flavor">{{ p().categoria?.nome }}</div>
+    <div class="product-footer">
+      @if (prezzoMinimo(p()) !== null) {
+        <span class="product-price">da {{ prezzoMinimo(p()) | currency: 'EUR' }}</span>
+      } @else {
+        <span class="muted">Non disponibile</span>
+      }
+    </div>
+  </div>
+</a>

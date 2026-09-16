@@ -1,0 +1,57 @@
+<!-- ============================================================================ -->
+<!-- PROPRIETARIO: Mattia — Catalogo (Categoria / Prodotto / VarianteProdotto) -->
+<!-- ============================================================================ -->
+<h3 class="mb-16">Categorie</h3>
+
+@if (erroreMsg()) {
+  <p class="errore">{{ erroreMsg() }}</p>
+}
+
+<table class="tabella">
+  <tbody>
+    @for (c of categorie(); track c.id) {
+      <tr>
+        <!-- @if/@else (teoria cap. 16): la stessa riga di tabella mostra o il form di modifica
+             o la vista normale, a seconda che questa specifica categoria sia "in editing" -->
+        <td>
+          <!-- anteprima dell'immagine attuale, o un segnaposto se non ancora caricata -->
+          @if (c.immagine) {
+            <img [src]="apiOrigin + c.immagine" alt="{{ c.nome }}" style="width:48px;height:48px;object-fit:cover;border-radius:4px;">
+          } @else {
+            <span class="errore" style="font-size:12px;">nessuna immagine</span>
+          }
+        </td>
+        <td>
+          <button class="btn-text" type="button" [disabled]="caricamentoImmagine() === c.id" (click)="fileInput.click()">
+            {{ caricamentoImmagine() === c.id ? 'Caricamento...' : 'Carica immagine' }}
+          </button>
+          <input #fileInput type="file" accept="image/*" style="display:none" (change)="onFileSelected($event, c)">
+        </td>
+        @if (inModifica() === c.id) {
+          <td>
+            <form class="form-riga" style="margin-top:0" [formGroup]="modificaForm" (ngSubmit)="salvaModifica(c.id)">
+              <input formControlName="nome" style="background:var(--card);border:1px solid var(--border);color:var(--ink);padding:8px;" />
+              <button class="btn-text lime" type="submit">Salva</button>
+              <button class="btn-text" type="button" (click)="inModifica.set(null)">Annulla</button>
+            </form>
+          </td>
+        } @else {
+          <td>{{ c.nome }}</td>
+          <td>
+            <button class="btn-text" (click)="iniziaModifica(c)">Modifica</button>
+            <button class="btn-text btn-danger" (click)="elimina(c.id)">Elimina</button>
+          </td>
+        }
+      </tr>
+    }
+  </tbody>
+</table>
+
+<h4 class="mt-24 mb-16">Nuova categoria</h4>
+<form class="form-riga" [formGroup]="nuovaForm" (ngSubmit)="crea()">
+  <div class="campo" style="margin-bottom:0">
+    <label>Nome</label>
+    <input formControlName="nome" />
+  </div>
+  <button class="btn btn-primary" type="submit" [disabled]="nuovaForm.invalid">Crea</button>
+</form>

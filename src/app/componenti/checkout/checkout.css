@@ -1,0 +1,31 @@
+.lista-indirizzi,
+.lista-pagamenti {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.opzione-radio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 14px;
+}
+.opzione-radio input { accent-color: var(--lime); }
+
+.riepilogo {
+  max-width: 380px;
+}
+
+.totale-finale {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}

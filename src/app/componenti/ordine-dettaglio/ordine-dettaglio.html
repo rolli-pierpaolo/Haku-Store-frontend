@@ -1,0 +1,54 @@
+<!-- ============================================================================ -->
+<!-- PROPRIETARIO: Valerio — Ordini (Ordine / DettaglioOrdine / checkout) -->
+<!-- ============================================================================ -->
+@if (ordine(); as o) {
+  <h2 class="section-title">Ordine #{{ o.id }}</h2>
+  <p class="light">{{ o.dataOrdine | date: 'dd/MM/yyyy HH:mm' }}</p>
+  <p class="mt-8">
+    <span class="badge-stato">{{ o.stato }}</span>
+    <span class="badge-stato" style="margin-left:8px">{{ o.statoPagamento }}</span>
+    <span class="muted" style="margin-left:8px">{{ o.metodoPagamento }}</span>
+  </p>
+
+  <!-- Indirizzo STORICIZZATO sull'ordine (campi piatti, non un riferimento a Indirizzo):
+       resta invariato anche se l'utente modifica o cancella l'indirizzo originale in seguito -->
+  <h3 class="mt-24 mb-16">Spedizione</h3>
+  <p class="light">{{ o.spedizioneVia }}, {{ o.spedizioneCitta }} ({{ o.spedizioneCap }}) {{ o.spedizioneProvincia }} - {{ o.spedizioneNazione }}</p>
+
+  <h3 class="mt-24 mb-16">Articoli</h3>
+  <table class="tabella">
+    <thead>
+      <tr>
+        <th>Prodotto</th>
+        <th>Prezzo unitario</th>
+        <th>Quantità</th>
+        <th>Subtotale</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (r of o.righe; track r.id) {
+        <tr>
+          <td>
+            <strong>{{ r.variante.nomeProdotto }}</strong>
+            <span class="muted"> — {{ r.variante.gusto }} {{ r.variante.formato }} {{ r.variante.colore }}</span>
+          </td>
+          <!-- prezzoUnitario e' CONGELATO al momento del checkout: anche se il prezzo
+               della variante cambia oggi, qui resta quello pagato realmente -->
+          <td>{{ r.prezzoUnitario | currency: 'EUR' }}</td>
+          <td>{{ r.quantita }}</td>
+          <td>{{ r.subtotale | currency: 'EUR' }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <div class="riepilogo card">
+    <div class="flex-between"><span class="light">Totale prodotti</span><span>{{ o.totaleProdotti | currency: 'EUR' }}</span></div>
+    @if (o.codiceCouponUsato) {
+      <div class="flex-between mt-8"><span class="light">Sconto ({{ o.codiceCouponUsato }})</span><span>-{{ o.valoreSconto | currency: 'EUR' }}</span></div>
+    }
+    <div class="flex-between mt-16 totale-finale"><span>Totale pagato</span><span>{{ o.totalePagato | currency: 'EUR' }}</span></div>
+  </div>
+} @else {
+  <p class="muted">Caricamento...</p>
+}

@@ -1,0 +1,27 @@
+.riga-prodotto {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 14px 18px;
+  margin-bottom: 10px;
+}
+
+.intestazione-prodotto {
+  cursor: pointer;
+  display: inline-block;
+  flex: 1;
+}
+
+.dettaglio-varianti {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.input-quantita {
+  width: 70px;
+  padding: 6px 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  font-family: var(--font-body);
+}

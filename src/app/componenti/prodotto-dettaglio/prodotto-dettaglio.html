@@ -1,0 +1,161 @@
+<!-- ============================================================================ -->
+<!-- PROPRIETARIO: Mattia — Catalogo (Categoria / Prodotto / VarianteProdotto) -->
+<!-- ============================================================================ -->
+<!-- "@if (prodotto(); as p)" (teoria cap. 16): valuta il signal UNA volta e lo salva
+     nella variabile locale "p" per tutto il blocco, evitando di richiamare prodotto()
+     ripetutamente — utile anche perche' finche' e' null (dati non ancora arrivati) va al ramo @else -->
+@if (prodotto(); as p) {
+  <div class="breadcrumb muted">
+    <a routerLink="/catalogo">Catalogo</a>
+    <span> / </span>
+    <span>{{ p.categoria?.nome }}</span>
+    <span> / </span>
+    <span>{{ p.nome }}</span>
+  </div>
+
+  <div class="layout-dettaglio">
+    <div class="product-img product-img-dettaglio">
+      <img [src]="immagineDi(p)" [alt]="p.nome" />
+      <!-- foto vera della categoria, sovrapposta al bollino (solo se caricata) -->
+      @if (immagineCategoriaDi(p); as urlCategoria) {
+        <img class="badge-categoria" [src]="urlCategoria" [alt]="p.categoria?.nome ?? ''" />
+      }
+    </div>
+
+    <div class="info-dettaglio">
+      <div class="section-label">{{ p.marca }} · {{ p.categoria?.nome }}</div>
+      <h1 class="section-title">{{ p.nome }}</h1>
+
+      <!-- Valutazione media calcolata dal computed mediaVoto (basato sulle vere recensioni
+           caricate sotto): niente di finto, se non ci sono ancora recensioni si vede il messaggio -->
+      @if (mediaVoto(); as mv) {
+        <div class="rating-riga">
+          <span class="stelle">
+            @for (i of [1, 2, 3, 4, 5]; track i) {
+              <span [class.piena]="i <= round(mv.media)">★</span>
+            }
+          </span>
+          <span class="muted rating-testo">{{ mv.media.toFixed(1) }} su {{ mv.count }} recension{{ mv.count === 1 ? 'e' : 'i' }}</span>
+        </div>
+      } @else {
+        <p class="muted rating-testo mb-16">Ancora nessuna recensione</p>
+      }
+
+      <p class="prezzo-dettaglio">{{ (varianteSelezionata()?.prezzo ?? 0) | currency: 'EUR' }}</p>
+      <p class="disponibilita-dettaglio" [class.esaurito]="!varianteSelezionata() || varianteSelezionata()!.quantitaDisponibile <= 0">
+        {{ varianteSelezionata() && varianteSelezionata()!.quantitaDisponibile > 0 ? varianteSelezionata()!.quantitaDisponibile + ' disponibili' : 'Esaurito' }}
+      </p>
+
+      <!-- auth.isLogged() (dal service di Sarah): mostra il form di acquisto solo se autenticato,
+           coerente col fatto che il backend richiede comunque il login per /rest/carrello/items -->
+      @if (auth.isLogged()) {
+        <form class="form-riga" [formGroup]="quantitaForm" (ngSubmit)="aggiungiAlCarrello()">
+          <div class="campo campo-quantita">
+            <label>Quantità</label>
+            <input type="number" min="1" [max]="varianteSelezionata()?.quantitaDisponibile ?? 1" formControlName="quantita" />
+          </div>
+          <button class="btn btn-primary" type="submit" [disabled]="!varianteSelezionata() || varianteSelezionata()!.quantitaDisponibile <= 0">
+            {{ varianteSelezionata() && varianteSelezionata()!.quantitaDisponibile <= 0 ? 'Esaurito' : 'Aggiungi al carrello' }}
+          </button>
+        </form>
+      } @else {
+        <p class="muted mt-16">Accedi per aggiungere questo prodotto al carrello.</p>
+      }
+
+      @if (messaggioCarrello()) {
+        <p class="messaggio-ok mt-16">{{ messaggioCarrello() }}</p>
+      }
+
+      <table class="tabella-specifiche mt-24">
+        <tbody>
+          <tr><td class="muted">Marca</td><td class="text-right">{{ p.marca }}</td></tr>
+          @if (varianteSelezionata()?.formato) {
+            <tr><td class="muted">Formato</td><td class="text-right">{{ varianteSelezionata()!.formato }}</td></tr>
+          }
+          @if (varianteSelezionata()?.gusto) {
+            <tr><td class="muted">Gusto</td><td class="text-right">{{ varianteSelezionata()!.gusto }}</td></tr>
+          }
+          @if (varianteSelezionata()?.colore) {
+            <tr><td class="muted">Colore</td><td class="text-right">{{ varianteSelezionata()!.colore }}</td></tr>
+          }
+        </tbody>
+      </table>
+
+      <p class="light descrizione-dettaglio">{{ p.descrizione }}</p>
+    </div>
+  </div>
+
+  <h3 class="mt-24 mb-16">Varianti</h3>
+  <div class="griglia-varianti">
+    <!-- Una scheda per gusto (non per ogni combinazione gusto+formato): il formato si
+         sceglie con la tendina dentro la scheda, cosi' non si ripete lo stesso gusto
+         piu' volte solo perche' cambia il formato -->
+    @for (g of gruppiVarianti(); track g.gusto + '|' + g.colore) {
+      @let attivo = formatoAttivo(g);
+      <div
+        class="scheda-variante"
+        [class.selezionata]="varianteSelezionata()?.id === attivo.id"
+        [class.esaurita]="tutteEsaurite(g)"
+        (click)="selezionaVariante(attivo)">
+        <p>{{ g.gusto }}{{ g.colore ? ' ' + g.colore : '' }}</p>
+
+        @if (g.varianti.length > 1) {
+          <select
+            class="select-formato"
+            [value]="attivo.id"
+            (click)="$event.stopPropagation()"
+            (change)="selezionaFormato(g, +$any($event.target).value)">
+            @for (v of g.varianti; track v.id) {
+              <option [value]="v.id">{{ v.formato }}{{ v.quantitaDisponibile <= 0 ? ' (esaurito)' : '' }}</option>
+            }
+          </select>
+        } @else {
+          <p class="muted" style="font-size:12px">{{ attivo.formato }}</p>
+        }
+
+        <p class="product-price">{{ attivo.prezzo | currency: 'EUR' }}</p>
+        <p class="disponibilita">
+          {{ attivo.quantitaDisponibile > 0 ? attivo.quantitaDisponibile + ' disponibili' : 'Esaurito' }}
+        </p>
+      </div>
+    }
+  </div>
+
+  <h3 class="mt-24 mb-16">Recensioni</h3>
+  @for (r of recensioni(); track r.id) {
+    <div class="scheda-recensione card">
+      <p><strong>{{ r.nomeUtente }} {{ r.cognomeUtente }}</strong> <span class="lime">— voto {{ r.voto }}/5</span></p>
+      @if (r.titolo) {
+        <p class="mt-8"><strong>{{ r.titolo }}</strong></p>
+      }
+      <p class="light">{{ r.commento }}</p>
+      <!-- pipe "date" (teoria cap. 17) con formato personalizzato -->
+      <p class="data-recensione muted">{{ r.dataRecensione | date: 'dd/MM/yyyy' }}</p>
+    </div>
+  } @empty {
+    <p class="muted">Nessuna recensione per questo prodotto.</p>
+  }
+
+  @if (auth.isLogged()) {
+    <h4 class="mt-24 mb-16">Lascia una recensione</h4>
+    <form class="form form-wide" [formGroup]="recensioneForm" (ngSubmit)="inviaRecensione()">
+      <div class="form-riga">
+        <div class="campo" style="max-width:100px">
+          <label>Voto (1-5)</label>
+          <input type="number" min="1" max="5" formControlName="voto" />
+        </div>
+        <div class="campo" style="flex:2">
+          <label>Titolo</label>
+          <input formControlName="titolo" />
+        </div>
+      </div>
+      <div class="campo">
+        <label>Commento</label>
+        <input formControlName="commento" />
+      </div>
+      <button class="btn btn-outline" type="submit" [disabled]="recensioneForm.invalid">Invia recensione</button>
+    </form>
+  }
+} @else {
+  <p class="muted">Caricamento...</p>
+}

@@ -1,0 +1,86 @@
+<!-- ============================================================================ -->
+<!-- PROPRIETARIO: Mattia — Catalogo (Categoria / Prodotto / VarianteProdotto) -->
+<!-- ============================================================================ -->
+<section class="hero-mini hero-home">
+  <img src="hakustore-logo.png" alt="Hakustore" class="hero-logo-big">
+  <div class="hero-tag"><span class="hero-tag-dot"></span> Haku store</div>
+  <h1 class="hero-title">Graffia<br>i tuoi <em>limiti</em></h1>
+  <p class="hero-sub">Integratori e accessori premium formulati per chi non si accontenta.</p>
+</section>
+
+<!-- Le vetrine della home: ognuna e' indipendente dal catalogo filtrato sotto e sparisce
+     da sola se il backend non ha ancora dati per quella sezione (es. nessun ordine ancora
+     evaso per "in evidenza", nessun rifornimento registrato per "nuovamente disponibile") -->
+@if (prodottiInEvidenza().length > 0) {
+  <div class="section-label">Più richiesti</div>
+  <h2 class="section-title">In evidenza</h2>
+  <div class="griglia-prodotti mb-16">
+    @for (p of prodottiInEvidenza(); track p.id) {
+      <app-prodotto-card [p]="p" />
+    }
+  </div>
+}
+
+@if (prodottiNovita().length > 0) {
+  <div class="section-label">Appena arrivati</div>
+  <h2 class="section-title">Novità</h2>
+  <div class="griglia-prodotti mb-16">
+    @for (p of prodottiNovita(); track p.id) {
+      <app-prodotto-card [p]="p" />
+    }
+  </div>
+}
+
+@if (prodottiNuovamenteDisponibili().length > 0) {
+  <div class="section-label">Erano esauriti</div>
+  <h2 class="section-title">Nuovamente disponibile</h2>
+  <div class="griglia-prodotti mb-16">
+    @for (p of prodottiNuovamenteDisponibili(); track p.id) {
+      <app-prodotto-card [p]="p" />
+    }
+  </div>
+}
+
+<div class="flex-between mb-16">
+  <div>
+    <div class="section-label">Esplora</div>
+    <h2 class="section-title" style="margin-bottom:0">Catalogo</h2>
+  </div>
+
+  <!-- (ngSubmit) invia il form dei filtri di testo; i due <select> ricaricano subito
+       al cambio con (change), senza aspettare l'invio del form -->
+  <form class="form-riga" [formGroup]="filtriForm" (ngSubmit)="carica()">
+    <div class="campo" style="margin-bottom:0">
+      <input formControlName="nome" placeholder="Cerca per nome..." />
+    </div>
+    <div class="campo" style="margin-bottom:0">
+      <input formControlName="marca" placeholder="Marca..." />
+    </div>
+    <div class="campo" style="margin-bottom:0">
+      <select formControlName="idCategoria" (change)="carica()">
+        <option value="">Tutte le categorie</option>
+        <!-- @for (teoria cap. 16): genera dinamicamente un'opzione per ogni categoria
+             caricata dal backend, invece di scriverle a mano -->
+        @for (c of categorie(); track c.id) {
+          <option [value]="c.id">{{ c.nome }}</option>
+        }
+      </select>
+    </div>
+    <div class="campo" style="margin-bottom:0">
+      <select formControlName="ordinePrezzo" (change)="carica()">
+        <option value="">Ordina per...</option>
+        <option value="asc">Prezzo crescente</option>
+        <option value="desc">Prezzo decrescente</option>
+      </select>
+    </div>
+    <button class="btn btn-outline" type="submit">Filtra</button>
+  </form>
+</div>
+
+<div class="griglia-prodotti">
+  @for (p of prodotti(); track p.id) {
+    <app-prodotto-card [p]="p" />
+  } @empty {
+    <p class="muted">Nessun prodotto trovato.</p>
+  }
+</div>

@@ -1,0 +1,21 @@
+.input-quantita {
+  width: 60px;
+  padding: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+
+.riepilogo {
+  margin-top: 24px;
+  max-width: 380px;
+}
+
+.totale-finale {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
